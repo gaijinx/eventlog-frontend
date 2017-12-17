@@ -11,15 +11,19 @@ body > div {
     height:99%;
 }
 
-.middlebox
+.middlebox 
 {
-    background-color: white;
     position: absolute;
     top: 300px;
     width: 300px;
     left: 50%;    /* move the left edge to the center … */
     margin-left: -150px; /* … and move it to the left half the box’ width. */
     z-index: 9999;   /* Try to get it on top. */
+}
+
+.middlebox table
+{
+  background-color: white;
 }
 
 .top_right_float

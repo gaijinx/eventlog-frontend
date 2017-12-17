@@ -6,9 +6,11 @@ export function create_container_div(){
   if ($('#login_div').length == 0){
     let login_div = document.createElement('div');
     login_div.setAttribute('id', 'login_div');
+    login_div.setAttribute('class', 'middlebox');
+    
     let login_table = document.createElement('table');
     login_table.setAttribute('id', 'login_table');
-    login_table.setAttribute('class', 'table middlebox');
+    login_table.setAttribute('class', 'table');
     login_table.setAttribute('style', 'width:300px;');
     login_div.appendChild(login_table);
     document.body.appendChild(login_div);
@@ -104,7 +106,6 @@ export function register(){
 }
 
 function authenticate_result(success, msg){
-  console.log('magic: ' + success);
   if (success){
     $("#login_div").hide();
     setCookie('login=' + document.getElementById("id_login").value + ';');
@@ -115,13 +116,13 @@ function authenticate_result(success, msg){
   }
 }
 
-function clearElement(element){
+export function clearElement(element){
   while (element.firstChild) {
     element.removeChild(element.firstChild);
   }
 }
 
-function add_tr(innerHTML){
+export function add_tr(innerHTML){
   let new_tr = document.createElement('tr');
   let new_td = document.createElement('td');
   if (innerHTML){
@@ -170,11 +171,11 @@ export function show_login_form(){
   $("#login_div").show();
 }
 
-function setCookie(cookie){
+export function setCookie(cookie){
   document.cookie = cookie;
 }
 
-function getCookie(name) {
+export function getCookie(name) {
   var value = "; " + document.cookie;
   var parts = value.split("; " + name + "=");
   if (parts.length == 2) return parts.pop().split(";").shift();
