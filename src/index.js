@@ -9,6 +9,7 @@ window.show_register_form = login_utils.register_form;
 window.logout = login_utils.logout;
 window.get_marker_data_by_id = map_app.get_marker_data_by_id;
 window.vote = map_app.vote;
+window.add_new_event = map_app.add_new_event;
 
 // function logout_btn() {
 //   let element = document.createElement('div');

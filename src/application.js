@@ -22,6 +22,10 @@ function application() {
   L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(mainMap);
+  function onMapClick(e) {
+    populate_new_event_table(e.latlng.lat, e.latlng.lng);
+  };
+  mainMap.on('click', onMapClick);
   get_markers(mainMap);
   return mapDiv;
 }
@@ -73,7 +77,7 @@ function populate_info_table(marker){
 }
 
 export function get_marker_data_by_id(id){
-  ajax('/markers/')
+  ajax('/markers')
   .post({
     id: id
   })
@@ -108,6 +112,89 @@ export function vote(id, vote){
     info_to_user('ID: ' + id + ' Vote: ' + vote);
   });
 }
+
 function info_to_user(msg){
   document.getElementById('id_event_info').innerText = msg;
+}
+
+function populate_new_event_table(lat, lon){
+  let table = document.getElementById('login_table');
+  login_utils.clearElement(table);
+  login_table.appendChild(login_utils.add_tr('<b>Rodzaj zdarzenia:</b>'));
+  login_table.appendChild(get_event_type_select_tr());
+  get_event_types();
+  login_table.appendChild(login_utils.add_tr('<b>Opis:</b>'));
+  login_table.appendChild(login_utils.add_tr('<input type="text" id="id_desc">'));
+  login_table.appendChild(login_utils.add_tr('<button class="btn btn-primary" onClick="window.add_new_event(' + lat + ',' + lon + ')">DODAJ</button>'));
+  $('#login_div').show();
+
+} 
+
+function get_event_types(){
+  ajax('/event_types')
+  .post()
+  .then(function(response) {
+    var response_json = JSON.parse(response.response);
+    if (response_json.success){
+      populate_event_types(response_json.event_types);
+    }else{
+      populate_event_types([]);
+    }
+  })
+  .catch(function(err) {
+    // TODO REMOVE
+    let mock = JSON.parse('[{"id":1, "name":"Wypadek"}, {"id":2, "name":"Patrol"}]');
+    populate_event_types(mock);
+  });
+}
+
+function populate_event_types(event_types_array){
+  let select = document.getElementById('id_event_types_select');
+  for (var index in event_types_array){
+    let event_type = event_types_array[index]
+    let option = document.createElement('option');
+    option.setAttribute('value', event_type.id);
+    option.innerText = event_type.name;
+    if (index == 0){
+      option.setAttribute("selected", "selected");
+    }
+    select.appendChild(option);
+  }
+}
+
+function get_event_type_select_tr(){
+  let input_tr = document.createElement('tr');
+  let input_td = document.createElement('td');
+  let select = document.createElement('select');
+  select.setAttribute("id", "id_event_types_select");
+  input_td.appendChild(select);
+  input_tr.appendChild(input_td);
+  return input_tr;
+}
+
+export function add_new_event(lat, lon){
+  let login = login_utils.getCookie('login');
+  let event_type = get_selected_value('id_event_types_select');
+  let description = document.getElementById('id_desc').value;
+  ajax('/new_event').post({
+    login: login,
+    lat: lat,
+    lon: lon,
+    event_type: event_type,
+    description: description,
+  })
+  .then(function(response) {
+    var response_json = JSON.parse(response.response);
+    if (response_json.success){
+      alert('Dodano zgloszenie');
+    }
+  })
+  .catch(function(err) {
+  });
+  $('#login_div').hide();
+}
+
+function get_selected_value(select_object_id){
+  var e = document.getElementById(select_object_id);
+  return e.options[e.selectedIndex].value;
 }
