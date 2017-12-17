@@ -2,6 +2,7 @@ import application from './application.js';
 import * as login_utils from './login_form.js';
 import register_form from './login_form.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import ajax from 'es-ajax';
 
 function component() {
   let element = document.createElement('div');
@@ -23,6 +24,8 @@ function show_register_form(){
   login_utils.register_form();
 }
 
+window.authenticate = login_utils.authenticate;
+window.register = login_utils.register;
 window.show_login_form = show_login_form;
 window.show_register_form = show_register_form;
 
