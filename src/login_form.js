@@ -1,15 +1,19 @@
+import * as map_app from './application.js';
 import 'bootstrap/dist/css/bootstrap.css';
 import ajax from 'es-ajax';
 
 export function create_container_div(){
-  let login_div = document.createElement('div');
-  login_div.setAttribute('id', 'login_div');
-  let login_table = document.createElement('table');
-  login_table.setAttribute('id', 'login_table');
-  login_table.setAttribute('class', 'table middlebox');
-  login_table.setAttribute('style', 'width:300px;');
-  login_div.appendChild(login_table);
-  return login_div;
+  if ($('#login_div').length == 0){
+    let login_div = document.createElement('div');
+    login_div.setAttribute('id', 'login_div');
+    let login_table = document.createElement('table');
+    login_table.setAttribute('id', 'login_table');
+    login_table.setAttribute('class', 'table middlebox');
+    login_table.setAttribute('style', 'width:300px;');
+    login_div.appendChild(login_table);
+    document.body.appendChild(login_div);
+  }
+  
 }
 
 export function login_form() {
@@ -61,7 +65,8 @@ export function authenticate(){
         
     })
     .catch(function(err) {
-      authenticate_result(false, 'Something went wrong.');
+      // TODO SET TO FALSE
+      authenticate_result(true, 'Something went wrong.');
     });
   }
 }
@@ -99,9 +104,12 @@ export function register(){
 }
 
 function authenticate_result(success, msg){
+  console.log('magic: ' + success);
   if (success){
     $("#login_div").hide();
-    // login user here
+    setCookie('login=' + document.getElementById("id_login").value + ';');
+    set_logout_btn();
+    map_app.init_map();
   }else{
     document.getElementById("id_errors").innerText = msg;
   }
@@ -121,4 +129,53 @@ function add_tr(innerHTML){
   }
   new_tr.appendChild(new_td);
   return new_tr;
+}
+
+function set_logout_btn(){
+  let btn = document.getElementById("id_login_logout_btn");
+  btn.innerText = 'Wyloguj';
+  btn.setAttribute('onClick', 'window.logout()');
+  let div = document.getElementById("id_login_logout_btn_div");
+  let paragraph = document.getElementById('id_info_box');
+  paragraph.innerText = 'Zalogowany jako: ' + getCookie('login');
+  $("#id_login_logout_btn_div").show();
+}
+
+export function logout(){
+  setCookie("login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
+  show_login_form();
+}
+
+export function init_login_logout_btn() {
+  let element = document.createElement('div');
+  element.setAttribute('id', 'id_login_logout_btn_div');
+  element.setAttribute('class', 'top_right_float');
+  let btn = document.createElement('button');
+  btn.setAttribute('class', 'btn btn-primary');
+  btn.innerText = 'Zaloguj';
+  btn.setAttribute('id', 'id_login_logout_btn');
+  btn.setAttribute('onClick', "window.show_login_form()");
+  element.appendChild(btn);
+  let paragraph = document.createElement('p');
+  paragraph.setAttribute('id', 'id_info_box');
+  element.appendChild(paragraph);
+  document.body.appendChild(element);
+}
+
+export function show_login_form(){
+  create_container_div();
+  login_form();
+  map_app.remove_map();
+  $("#id_login_logout_btn_div").hide();
+  $("#login_div").show();
+}
+
+function setCookie(cookie){
+  document.cookie = cookie;
+}
+
+function getCookie(name) {
+  var value = "; " + document.cookie;
+  var parts = value.split("; " + name + "=");
+  if (parts.length == 2) return parts.pop().split(";").shift();
 }
