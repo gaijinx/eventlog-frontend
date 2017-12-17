@@ -10,3 +10,22 @@ body > div {
     width:100%;
     height:99%;
 }
+
+.middlebox
+{
+    background-color: white;
+    position: absolute;
+    top: 300px;
+    width: 300px;
+    left: 50%;    /* move the left edge to the center … */
+    margin-left: -150px; /* … and move it to the left half the box’ width. */
+    z-index: 9999;   /* Try to get it on top. */
+}
+
+.top_right_float
+{
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  z-index: 9999;   /* Try to get it on top. */
+}
